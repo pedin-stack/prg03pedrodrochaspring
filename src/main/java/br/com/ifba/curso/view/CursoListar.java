@@ -7,10 +7,10 @@ package br.com.ifba.curso.view;
 import br.com.ifba.infrastructure.util.StringUtil;
 import br.com.ifba.curso.Controller.CursoControllerI;
 import br.com.ifba.curso.entity.Curso;
-import jakarta.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -56,7 +56,7 @@ public class CursoListar extends javax.swing.JFrame {
         if (curso == null) {
 
             jOptionPane1.showMessageDialog(null, "Não foi possível adicionar o curso");//
-
+            return;
         }
 
        cursoController.save(curso);
@@ -134,8 +134,9 @@ public class CursoListar extends javax.swing.JFrame {
 
         for (Curso curso : listaCapsula) {
             listaCursos.add(curso); //passando todos os itens da lista capsula para a lista local
-            preencherTabela();
         }
+        preencherTabela();  
+        
     }
 
     public void limparcaixadeTexto(){
@@ -436,11 +437,7 @@ public class CursoListar extends javax.swing.JFrame {
         }
 
         adicionarCurso(cursoCapsula);//passandpo para a camada de baixo'Service'
-
-         tableModel.setRowCount(0);
          
-         preencherTabela();
-        
         limparcaixadeTexto();// reseto todas as caixas de texto
         
         JFadicionarCurso.setVisible(false);//ao confirmar envio do curso, fechar a janela
@@ -518,49 +515,62 @@ public class CursoListar extends javax.swing.JFrame {
     }//GEN-LAST:event_txtbarradePesquisaActionPerformed
 
     private void txtbarradePesquisaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtbarradePesquisaKeyPressed
-        if (stringUtil.isNullOrEmpty(txtbarradePesquisa.getText())) {
-            //se nao tiver nada mostar tudo
-            preencherTabela();
-            
-        }
-
         String termo = txtbarradePesquisa.getText().trim();
+    
+    //liimpar tabela de forma segura na EDT
+    SwingUtilities.invokeLater(() -> {
         tableModel.setRowCount(0);
+    });
 
-        try {
-            //tenta procurar pelo ID
-            Long id = Long.parseLong(termo);
-            Curso curso = cursoController.findById(id);
+    if (termo.isEmpty()) {
+        preencherTabela();
+        return;
+    }
 
-            if (curso == null) {
-                tableModel.addRow(new Object[]{
-                    curso.getNome(),
-                    curso.getId(),
-                    formatarStatus(curso.getAtivo()),
-                    curso.getAlunosMatriculados()
-                });
-            } else {
-                jOptionPane1.showMessageDialog(null, "Nenhum curso encontrado com esse ID.");
+    try {
+        Long id = Long.parseLong(termo);
+        
+        //usar invokeLater para garantir execução na thread correta
+        SwingUtilities.invokeLater(() -> {
+            try {
+                Curso curso = cursoController.findById(id);
+                //primeiro ver se é numérico
+                if (curso != null) {
+                    tableModel.addRow(new Object[]{
+                        curso.getNome(),
+                        curso.getId(),
+                        formatarStatus(curso.getAtivo()),
+                        curso.getAlunosMatriculados()
+                    });
+                } else {
+                    JOptionPane.showMessageDialog(null, "Nenhum curso encontrado com esse ID.");
+                    preencherTabela();
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Erro ao buscar curso: " + e.getMessage());
             }
-        } catch (NumberFormatException e) {
-            //se não for número, pesquisa por nome
+        });
+        
+    } catch (NumberFormatException e) {
+        //se não for numérico procurar por nome
+        SwingUtilities.invokeLater(() -> {
             List<Curso> resultados = cursoController.findByName(termo);
-
-            if (resultados.isEmpty()) {// se a lista de resultados estiver vazia lança essa exceção
-                jOptionPane1.showMessageDialog(null, "Nenhum curso encontrado com esse nome.");
-                 preencherTabela();
-                
+            
+            if (resultados.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Nenhum curso encontrado com esse nome.");
+                preencherTabela();
             } else {
                 for (Curso curso : resultados) {
                     tableModel.addRow(new Object[]{
                         curso.getNome(),
                         curso.getId(),
                         formatarStatus(curso.getAtivo()),
-                        curso.getAlunosMatriculados() // Método para formatar status
+                        curso.getAlunosMatriculados()
                     });
                 }
             }
-        }
+        });
+    }
     }//GEN-LAST:event_txtbarradePesquisaKeyPressed
 
     /**

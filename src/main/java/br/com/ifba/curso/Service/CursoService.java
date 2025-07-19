@@ -65,8 +65,7 @@ public class CursoService implements CursoServiceI {
 @Override
     public Curso findById(Long id) throws RuntimeException {
         
-        return Cr.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Curso com ID " + id + " não encontrado."));
+        return Cr.findById(id).orElseThrow(() -> new IllegalArgumentException("Curso com ID " + id + " não encontrado."));
     }
     
 
