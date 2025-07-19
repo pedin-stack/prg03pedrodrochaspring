@@ -4,7 +4,7 @@
  */
 package br.com.ifba.curso.exceptions;
 
-import br.com.ifba.curso.dao.dao;
+
 
 import java.util.List;
 

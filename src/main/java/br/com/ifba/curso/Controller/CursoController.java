@@ -23,13 +23,13 @@ public class CursoController implements CursoControllerI {
     }
     
     @Override
-    public Curso save(Curso curso)throws RuntimeException {// nome,codigo,status e quantidades nao vazios e nao nulos 
-          return cursoService.save(curso);
+    public void save(Curso curso)throws RuntimeException {// nome,codigo,status e quantidades nao vazios e nao nulos 
+           cursoService.save(curso);
     }
 
     @Override
-    public Curso update(Curso curso)throws RuntimeException {//deve haver ao menos um curso|  
-        return cursoService.update(curso);
+    public void update(Curso curso)throws RuntimeException {//manterrei no controler como update para meros fins de organização
+        cursoService.update(curso);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class CursoController implements CursoControllerI {
     }
 
     @Override
-    public List<Curso>findAll()throws RuntimeException {
+    public List findAll()throws RuntimeException {
         return cursoService.findAll();
     }
 

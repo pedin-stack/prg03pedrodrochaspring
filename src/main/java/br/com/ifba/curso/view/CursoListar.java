@@ -59,15 +59,15 @@ public class CursoListar extends javax.swing.JFrame {
 
         }
 
-        Curso cursoSalvo = cursoController.save(curso);
+       cursoController.save(curso);
 
-        listaCursos.add(cursoSalvo);
+        listaCursos.add(curso);
 
         tableModel.addRow(new Object[]{
-            cursoSalvo.getNome(),
-            cursoSalvo.getId(),
-            formatarStatus(cursoSalvo.getAtivo()),
-            cursoSalvo.getAlunosMatriculados()
+            curso.getNome(),
+            curso.getId(),
+            formatarStatus(curso.getAtivo()),
+            curso.getAlunosMatriculados()
         });
 
     }
