@@ -119,7 +119,7 @@ public class CursoListar extends javax.swing.JFrame {
                 curso.getNome(),
                 curso.getId(),
                 formatarStatus(curso.getAtivo()),
-                curso.getAlunosMatriculados()
+                curso.getAlunosMatriculados()   
             });
         }
 

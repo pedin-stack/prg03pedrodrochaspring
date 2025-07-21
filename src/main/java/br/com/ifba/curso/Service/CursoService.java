@@ -8,36 +8,35 @@ import br.com.ifba.curso.exceptions.Exceptions;
 import java.util.List;
 import br.com.ifba.curso.entity.Curso;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import br.com.ifba.curso.repository.CursoRepository;
-import java.util.Optional;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
  * @author Casa
  */
+@Slf4j
 @Service
+@RequiredArgsConstructor// injeção de dependencias FEITA DE forma automatica pelo lombook
 public class CursoService implements CursoServiceI {
 
-    @Autowired
-    private final CursoRepository Cr; 
+    private final CursoRepository Cr;
 
     Exceptions excecoes = new Exceptions();
-
-    @Autowired
-    public CursoService(CursoRepository cursoRepository) {
-        this.Cr = cursoRepository;
-    }
 
     @Override
     @Transactional
     public void save(Curso curso) throws RuntimeException {
         if (excecoes.capsuleisNull(curso)) {
             throw new RuntimeException("Dados do curso não preenchidos");
+        } else {
+            Cr.save(curso);
+
+            log.info("Salvando curso");
         }
-        Cr.save(curso);
+
     }
 
     @Override
@@ -45,8 +44,11 @@ public class CursoService implements CursoServiceI {
     public void update(Curso curso) throws RuntimeException {
         if (excecoes.capsuleisNull(curso)) {
             throw new RuntimeException("Dados do curso não preenchidos");
+        } else {
+
+            Cr.save(curso);
+            log.info("Curso" + curso + "teve suas informações alteradas");
         }
-        Cr.save(curso);
     }
 
     @Override
@@ -54,20 +56,24 @@ public class CursoService implements CursoServiceI {
     public void delete(Curso curso) throws RuntimeException {
         if (excecoes.capsuleisNull(curso)) {
             throw new RuntimeException("Dados do curso não preenchidos");
+        } else {
+
+            Cr.delete(curso);
+            log.info("Curso" + curso + "foi excluído");
         }
-        Cr.delete(curso);
+
     }
 
     @Override
     public List findAll() throws RuntimeException {
         return Cr.findAll();
     }
-@Override
+
+    @Override
     public Curso findById(Long id) throws RuntimeException {
-        
+
         return Cr.findById(id).orElseThrow(() -> new IllegalArgumentException("Curso com ID " + id + " não encontrado."));
     }
-    
 
     @Override
     public List<Curso> findbyName(String name) throws RuntimeException {

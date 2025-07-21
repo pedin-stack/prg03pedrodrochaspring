@@ -6,21 +6,17 @@ package br.com.ifba.curso.Controller;
 import br.com.ifba.curso.entity.Curso;
 import java.util.List;
 import br.com.ifba.curso.Service.CursoServiceI;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 /**
  *
  * @author Casa
  */
 @Controller
+@RequiredArgsConstructor// injeção feita sem necessidade da anotÇào autowired
 public class CursoController implements CursoControllerI {
-    @Autowired
+     
     private final CursoServiceI cursoService;
-
-     @Autowired
-    public CursoController(CursoServiceI cursoService) {
-        this.cursoService = cursoService;
-    }
     
     @Override
     public void save(Curso curso)throws RuntimeException {// nome,codigo,status e quantidades nao vazios e nao nulos 
